@@ -1,4 +1,4 @@
-import React from "react";
+/*import React from "react";
 import { Table, Button } from "react-bootstrap";
 
 const formatDate = (dateString) => {
@@ -45,3 +45,4 @@ const PossessionsTable = ({ possessions, onEdit, onDelete }) => {
 };
 
 export default PossessionsTable;
+*/

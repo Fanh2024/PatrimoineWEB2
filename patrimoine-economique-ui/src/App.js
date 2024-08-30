@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+/*import React, { useState, useEffect } from "react";
 import PossessionsTable from "./components/PossessionsTable";
 import possessionsData from "./data/possessions";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
@@ -196,5 +196,33 @@ function App() {
     </Container>
   );
 }
+
+export default App;
+*/
+
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Header from "./components/Header";
+import PatrimoinePage from "./pages/PatrimoinePage";
+import PossessionPage from "./pages/PossessionPage";
+import CreatePossessionPage from "./pages/CreatePossessionPage";
+import UpdatePossessionPage from "./pages/UpdatePossessionPage";
+
+const App = () => {
+  return (
+    <Router>
+      <Header />
+      <Routes>
+        <Route path="/patrimoine" element={<PatrimoinePage />} />
+        <Route path="/possession" element={<PossessionPage />} />
+        <Route path="/possession/create" element={<CreatePossessionPage />} />
+        <Route
+          path="/possession/update/:id"
+          element={<UpdatePossessionPage />}
+        />
+      </Routes>
+    </Router>
+  );
+};
 
 export default App;
