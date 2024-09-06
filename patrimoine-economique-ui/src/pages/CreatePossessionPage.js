@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/CreatePossessionPage.css";
+import { createPossession } from "../api"; // Assurez-vous que le chemin est correct
 
 const CreatePossessionPage = () => {
   const [libelle, setLibelle] = useState("");
@@ -9,11 +10,19 @@ const CreatePossessionPage = () => {
   const [taux, setTaux] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Logique pour soumettre les données
-    // Par exemple, appel API pour créer une nouvelle possession
-    navigate("/possession");
+
+    // Créer la nouvelle possession en appelant l'API
+    try {
+      await createPossession({ libelle, valeur, dateDebut, taux });
+      // Rediriger vers la page des possessions
+      navigate("/possession");
+      // Émettre un événement personnalisé pour notifier les autres composants
+      window.dispatchEvent(new Event("possessionsUpdated"));
+    } catch (error) {
+      console.error("Erreur lors de la création de la possession :", error);
+    }
   };
 
   return (

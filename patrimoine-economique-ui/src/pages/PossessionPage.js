@@ -215,9 +215,26 @@ const PossessionPage = () => {
       await closePossession(id); // Appel API pour clôturer la possession
       // Réactualiser la liste après la clôture
       getPossessions();
+      // Optionnel : émettre un événement pour notifier d'autres parties de l'application
+      window.dispatchEvent(new Event("possessionsUpdated"));
     } catch (error) {
       console.error("Erreur lors de la clôture de la possession :", error);
     }
+  };
+
+  const calculateValeurActuelle = (possession) => {
+    const dateDebut = new Date(possession.dateDebut);
+    const aujourdHui = new Date();
+    const annees = (aujourdHui - dateDebut) / (1000 * 60 * 60 * 24 * 365.25); // Nombre d'années écoulées
+    const taux = possession.tauxAmortissement / 100;
+
+    // Si taux est différent de 0, calculer l'amortissement
+    if (taux !== 0) {
+      return possession.valeur * Math.pow(1 - taux, annees);
+    }
+
+    // Si le taux est 0, la valeur reste constante
+    return possession.valeur;
   };
 
   return (
@@ -248,10 +265,14 @@ const PossessionPage = () => {
             <tr key={possession.id}>
               <td>{possession.libelle}</td>
               <td>{possession.valeur}</td>
-              <td>{possession.dateDebut}</td>
-              <td>{possession.dateFin}</td>
-              <td>{possession.taux}%</td>
-              <td>{possession.valeurActuelle.toFixed(2)} Ar</td>
+              <td>{new Date(possession.dateDebut).toLocaleDateString()}</td>
+              <td>
+                {possession.dateFin
+                  ? new Date(possession.dateFin).toLocaleDateString()
+                  : "N/A"}
+              </td>
+              <td>{possession.tauxAmortissement}%</td>
+              <td>{calculateValeurActuelle(possession).toFixed(2)} Ar</td>
               <td className="actions">
                 <button
                   className="modify-button"
