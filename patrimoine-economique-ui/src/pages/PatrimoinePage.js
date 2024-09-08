@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Chart from "chart.js/auto";
@@ -11,13 +11,7 @@ const PatrimoinePage = () => {
   const [selectedDay, setSelectedDay] = useState("Lundi");
   const [patrimoineValue, setPatrimoineValue] = useState(0);
   const [chartData, setChartData] = useState([]);
-
-  // Fonction pour récupérer la valeur du patrimoine pour une plage de dates
-  const getPatrimoineByRange = async () => {
-    // Simuler un appel à l'API
-    const randomData = [10000, 12000, 11000, 13000, 9000]; // Remplacer par une vraie logique
-    setChartData(randomData);
-  };
+  const chartRef = useRef(null); // Référence pour le graphique
 
   // Fonction pour récupérer la valeur du patrimoine à une date précise
   const getPatrimoineByDate = async () => {
@@ -26,16 +20,31 @@ const PatrimoinePage = () => {
     setPatrimoineValue(newValue);
   };
 
-  // Mettre à jour le graphique avec les nouvelles données
+  // Fonction pour récupérer la valeur du patrimoine pour une plage de dates
+  const getPatrimoineByRange = async () => {
+    // Simuler un appel à l'API pour obtenir des données de patrimoine sur une période
+    const randomData = Array.from({ length: 5 }, () =>
+      Math.floor(Math.random() * 15000 + 5000)
+    );
+    setChartData(randomData); // Mise à jour des données du graphique
+  };
+
+  // Fonction pour mettre à jour le graphique
   const updateChart = () => {
     const ctx = document.getElementById("patrimoineChart").getContext("2d");
-    new Chart(ctx, {
+
+    // Si le graphique existe déjà, le détruire avant de créer un nouveau
+    if (chartRef.current) {
+      chartRef.current.destroy();
+    }
+
+    chartRef.current = new Chart(ctx, {
       type: "line",
       data: {
-        labels: ["Date 1", "Date 2", "Date 3", "Date 4", "Date 5"], // Exemple de labels
+        labels: ["Date 1", "Date 2", "Date 3", "Date 4", "Date 5"], // Remplacer par des dates réelles si besoin
         datasets: [
           {
-            label: "Valeur du patrimoine",
+            label: `Valeur du patrimoine (${selectedDay})`,
             data: chartData,
             borderColor: "rgba(75, 192, 192, 1)",
             borderWidth: 2,
@@ -45,11 +54,17 @@ const PatrimoinePage = () => {
     });
   };
 
+  // useEffect pour mettre à jour le graphique quand les données changent
   useEffect(() => {
     if (chartData.length > 0) {
-      updateChart();
+      updateChart(); // Mettre à jour le graphique
     }
   }, [chartData]);
+
+  // Fonction qui sera appelée quand l'utilisateur clique sur "Valider" pour la plage de dates
+  const handleValidateRange = () => {
+    getPatrimoineByRange(); // Mettre à jour les données du graphique
+  };
 
   return (
     <div className="container">
@@ -95,7 +110,7 @@ const PatrimoinePage = () => {
           <option value="Samedi">Samedi</option>
           <option value="Dimanche">Dimanche</option>
         </select>
-        <button onClick={getPatrimoineByRange}>Valider</button>
+        <button onClick={handleValidateRange}>Valider</button>
       </div>
 
       {/* Graphique */}
